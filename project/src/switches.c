@@ -1,26 +1,25 @@
 #include <msp430.h>
 #include "switches.h"
+#include "stateMachines.h"
 #include "led.h"
-
-char switch_state_down, switch_state_changed; /* effectively boolean */
 
 static char 
 switch_update_interrupt_sense()
 {
-  char p1val = P1IN;
+  char p2val = P2IN;
   /* update switch interrupt to detect changes from current buttons */
-  P1IES |= (p1val & SWITCHES);	/* if switch up, sense down */
-  P1IES &= (p1val | ~SWITCHES);	/* if switch down, sense up */
-  return p1val;
+  P2IES |= (p2val & SWITCHES);	/* if switch up, sense down */
+  P2IES &= (p2val | ~SWITCHES);	/* if switch down, sense up */
+  return p2val;
 }
 
 void 
 switch_init()			/* setup switch */
 {  
-  P1REN |= SWITCHES;		/* enables resistors for switches */
-  P1IE |= SWITCHES;		/* enable interrupts from switches */
-  P1OUT |= SWITCHES;		/* pull-ups for switches */
-  P1DIR &= ~SWITCHES;		/* set switches' bits for input */
+  P2REN |= SWITCHES;		/* enables resistors for switches */
+  P2IE |= SWITCHES;		/* enable interrupts from switches */
+  P2OUT |= SWITCHES;		/* pull-ups for switches */
+  P2DIR &= ~SWITCHES;		/* set switches' bits for input */
   switch_update_interrupt_sense();
   led_update();
 }
@@ -28,8 +27,10 @@ switch_init()			/* setup switch */
 void
 switch_interrupt_handler()
 {
-  char p1val = switch_update_interrupt_sense();
-  switch_state_down = (p1val & SW1) ? 0 : 1; /* 0 when SW1 is up */
-  switch_state_changed = 1;
-  led_update();
+  char p2val = switch_update_interrupt_sense();
+  state = (p2val & SW1) ? 0 : 1;
+  state = (p2val & SW2) ? state : 2;
+  state = (p2val & SW3) ? state : 3;
+  state = (p2val & SW4) ? state : 4;
+  state_advance();
 }
