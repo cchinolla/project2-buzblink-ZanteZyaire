@@ -9,7 +9,5 @@ while in the ```/src``` directory.
 Each button serves a purpose as described below:
 ButtonOne | ButtonTwo | ButtonThree | ButtonFour
 ------------ | ------------- | -------------- | --------
-Plays a siren | Plays Mario theme song | Plays exponential frequency | Turns
-off sound
-Turns on green led 20% of the time | Turns on green led 60% of the time |
-Turns on green led indefinitely | Turns on red led and turns off green
+Plays a siren | Plays Mario theme song | Plays exponential frequency | Turns off sound
+Turns on green led 20% of the time | Turns on green led 60% of the time | Turns on green led indefinitely | Turns on red led and turns off green
