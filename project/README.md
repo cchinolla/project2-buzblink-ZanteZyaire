@@ -1,4 +1,4 @@
-Connect Four Web Service
+buzblink toy
 =
 # Brief Overview:
 This program operates as a toy which is used on an msp430 with an Edukit
