@@ -5,28 +5,29 @@
 
 char buttonPressed = 0;
 
-int song[] = { 660,660, 660,510,660,770,380,510,380,320,440,480,450,430,380,660,760,860,700,760,660,520,580,480,510,380,320,440,480,450,430,380,660,760,860,700,760,660,520,580,480,500,760,720,680,620,650,380,430,500,430,500, 570, 500, 760, 720, 680, 620, 650, 1020, 1020, 1020, 380, 500, 760, 720, 680, 620, 650, 380, 430, 500, 430, 500, 570, 585, 550, 500, 380, 500, 500, 500, 500, 760, 720, 680, 620, 650, 380, 430, 500, 430, 500, 570, 500, 760, 720, 680, 620, 650, 1020, 1020, 1020, 380, 500, 760, 720, 680, 620, 650, 380, 430, 500, 430, 500, 570, 585, 550, 500, 380, 500, 500, 500, 500, 500, 500, 500, 580, 660, 500, 430, 380, 500, 500, 500, 500, 580, 660, 870, 760, 500, 500, 500, 500, 580, 660, 500, 430, 380, 660, 660, 660, 510, 660, 770, 380};
-  
-static int ratio = 1100;
+int song[] = {660,660,660,510,660,770,380,510,380,320,440,480,450,430,380,660,760,860,700,760,660,520,580,480,510,380,320,440,480,450,430,380,660,760,860,700,760,660,520,580,480,500,760,720,680,620,650,380,430,500,430,500,570,500,760,720,680,620,650,1020,1020,1020,380,500,760,720,680,620,650,380,430,500,430,500,570,585,550,500,380,500,500,500,500,760,720,680,620,650,380,430,500,430,500,570,500,760,720,680,620,650,1020,1020,1020,380,500,760,720,680,620,650,380,430,500,430,500,570,585,550,500,380,500,500,500,500,500,500,500,580,660,500,430,380,500,500,500,500,580,660,870,760,500,500,500,500,580,660,500,430,380,660,660,660,510,660,770,380}; // frequencies for song
 
-void buttonOneState()	       
+static int ratioOne = 1100; 
+static int ratioTwo = 380;
+
+void buttonOneState() // Plays a siren noise
 {
-  static char goUp = 1;
+  static char goUp = 1; // Bool for increasing/decreasing frequency
   
-  if (ratio > 1400) goUp = 0;
-  else if (ratio < 1100) goUp = 1;
+  if (ratioOne > 1400) goUp = 0;
+  else if (ratioOne < 1100) goUp = 1;
 
-  if (goUp) ratio += 5;
-  else ratio -= 5;
+  if (goUp) ratioOne += 5;
+  else ratioOne -= 5;
   
-  buzzer_set_period(2000000 / ratio);
-  
+  buzzer_set_period(2000000 / ratioOne);
+
   red_on = 0;
   green_on = 1;
 
   static char greenState = 0;
 
-  switch (greenState) {
+  switch (greenState) { // green off 80% of time
   case 0: greenState++;   green_on = 1; break;
   case 1: greenState++;   green_on = 0; break;
   case 2: greenState++;   green_on = 0; break;
@@ -35,16 +36,15 @@ void buttonOneState()
   }
 }
 
-void buttonTwoState()	
+void buttonTwoState() // Plays a song
 {
   static int i = 0;
   static int timer = 0;
 
-  if (timer++ > 30) {
-    if (i == 156) i = 0;
-  
-    buzzer_set_period(2000000 / song[i++]);
+  if (i == 156) i = 0;
+  if (timer++ > 25) { // Plays each note for 100ms
     timer = 0;
+    buzzer_set_period(2000000 / song[i++]);
   }
   
   red_on = 0;
@@ -52,7 +52,7 @@ void buttonTwoState()
   
   static char greenState = 0;
 
-  switch (greenState) {
+  switch (greenState) { // Green off 40% of the time
   case 0: greenState++; green_on = 1; break;
   case 1: greenState++; green_on = 1; break;
   case 2: greenState++; green_on = 1; break;
@@ -61,21 +61,24 @@ void buttonTwoState()
   }
 }
 
-void buttonThreeState()
+void buttonThreeState() // Increases frequency by 5 every call
 {
-  buzzer_set_period(2000);
+  ratioTwo += 5;
+  if (ratioTwo > 6000) ratioTwo = 380;
+  
+  buzzer_set_period(2000000 / ratioTwo);
   red_on = 0;
   green_on = 1;
 }
 
-void buttonFourState()
+void buttonFourState() // Turns off green led and sounds
 {
   buzzer_set_period(0);
   red_on = 1;
   green_on = 0;
 }
 
-void state_advance()
+void state_advance() // Changes State
 {
   char changed = 0;
   
@@ -90,7 +93,7 @@ void state_advance()
   led_update();
 }
 
-void setButtonPress(char state)
+void setButtonPress(char state) // sets next state based on button press
 {
   switch (state) {
   case 1: buttonPressed = 1; break;
